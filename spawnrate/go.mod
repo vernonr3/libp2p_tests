@@ -2,9 +2,14 @@ module marcofind
 
 go 1.20
 
-require github.com/libp2p/go-libp2p v0.26.4
+//require github.com/libp2p/go-libp2p v0.26.4
 
-//replace github.com/libp2p/go-libp2p => ../../go-libp2p
+replace github.com/libp2p/go-libp2p => ../../../go-libp2p
+
+require (
+	github.com/ipfs/go-log/v2 v2.5.1
+	github.com/libp2p/go-libp2p v0.0.0-00010101000000-000000000000
+)
 
 require (
 	github.com/benbjohnson/clock v1.3.0 // indirect
@@ -27,7 +32,6 @@ require (
 	github.com/google/pprof v0.0.0-20221203041831-ce31453925ec // indirect
 	github.com/huin/goupnp v1.0.3 // indirect
 	github.com/ipfs/go-cid v0.3.2 // indirect
-	github.com/ipfs/go-log/v2 v2.5.1 // indirect
 	github.com/jackpal/go-nat-pmp v1.0.2 // indirect
 	github.com/jbenet/go-temp-err-catcher v0.1.0 // indirect
 	github.com/klauspost/compress v1.15.12 // indirect

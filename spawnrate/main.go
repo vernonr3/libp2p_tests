@@ -12,6 +12,7 @@ import (
 	"sync/atomic"
 	"time"
 
+	logging "github.com/ipfs/go-log/v2"
 	libp2p "github.com/libp2p/go-libp2p"
 	"github.com/libp2p/go-libp2p/core/host"
 	"github.com/libp2p/go-libp2p/core/peer"
@@ -26,11 +27,28 @@ func controlclients(clients_finished chan bool, s host.Host, numwaitgroups *int,
 	//var delay float64
 	var completed map[int]bool
 	completed = make(map[int]bool, 1000)
-
+	err := logging.SetLogLevel("basichost", "debug")
+	if err != nil {
+		panic(err)
+	}
+	/*lvl, err := logging.LevelFromString("error")
+	if err != nil {
+		panic(err)
+	}
+	logging.SetAllLoggers(lvl)*/
 	var mu sync.Mutex
 	n := atomic.Int32{}
 	wg := sync.WaitGroup{}
 	for i := 0; i < numclients; i++ {
+		if i%delay == 0 {
+			time.Sleep(time.Duration(1) * 10 * time.Millisecond)
+			//delay = float64(delayParam) * 1000
+			//fmt.Printf("Std Delay %f\n", delay)
+		} else {
+			time.Sleep(time.Duration(i%delay) * 10 * time.Millisecond)
+			//delay = float64(i%delayParam) * 1000
+			//fmt.Printf("Mod Delay %f\n", delay)
+		}
 		wg.Add(1)
 		*numwaitgroups++
 		go func(i int) {
@@ -38,16 +56,6 @@ func controlclients(clients_finished chan bool, s host.Host, numwaitgroups *int,
 			completed[i] = false
 			mu.Unlock()
 			numclient_goroutines++
-			if i%delay == 0 {
-				time.Sleep(time.Duration(1) * 100 * time.Millisecond)
-				//delay = float64(delayParam) * 1000
-				//fmt.Printf("Std Delay %f\n", delay)
-			} else {
-				time.Sleep(time.Duration(i%delay) * 100 * time.Millisecond)
-				//delay = float64(i%delayParam) * 1000
-				//fmt.Printf("Mod Delay %f\n", delay)
-			}
-
 			defer wg.Done()
 			newclient_calls++
 			err := newClient(peer.AddrInfo{
